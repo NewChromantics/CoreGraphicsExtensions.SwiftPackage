@@ -10,8 +10,8 @@ let package = Package(
 	name: "CoreGraphicsExtensions",
 	
 	platforms: [
-		.iOS(.v17),
-		.macOS(.v14)
+		.iOS(.v14),
+		.macOS(.v10_15)
 	],
 	
 

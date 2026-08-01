@@ -172,7 +172,7 @@ public func PixelBufferToCGImage(_ pb:CVPixelBuffer,useCoreImage:Bool=false) thr
 	
 	let InputWidth = CVPixelBufferGetWidth(pb)
 	let InputHeight = CVPixelBufferGetHeight(pb)
-	let InputFormatName = CVPixelBufferGetPixelFormatName(pixelBuffer:pb)
+	let InputFormatName = pb.pixelFormatName
 	let inputFormat = CVPixelBufferGetPixelFormatType(pb)
 	
 	//	ipad/ios18 can't auto convert kCVPixelFormatType_OneComponent32Float

@@ -1,50 +1,5 @@
-/*
-	Utilities for CoreGraphics types
-*/
 import CoreGraphics
 import simd
-
-
-public extension CGAffineTransform
-{
-	var float4x4 : simd_float4x4
-	{
-		let row_a = simd_float4( Float(self.a), Float(self.b), 0, 0 )
-		let row_b = simd_float4( Float(self.c), Float(self.d), 0, 0 )
-		let row_c = simd_float4( 0, 0, 1, 0 )
-		let row_d = simd_float4( Float(self.tx), Float(self.ty), 0, 1 )
-		return simd_float4x4(columns: (row_a,row_b,row_c,row_d) )
-	}
-}
-
-
-func * (lhs: CGSize, rhs: CGSize) -> CGSize {
-	.init(width: lhs.width * rhs.width, height: lhs.height * rhs.height)
-}
-
-func * (lhs: CGPoint, rhs: CGSize) -> CGPoint {
-	.init(x: lhs.x * rhs.width, y: lhs.y * rhs.height)
-}
-
-func + (lhs: CGSize, rhs: CGSize) -> CGSize {
-	.init(width: lhs.width + rhs.width, height: lhs.height + rhs.height)
-}
-
-func / (lhs: CGSize, rhs: CGSize) -> CGSize {
-	.init(width: lhs.width / rhs.width, height: lhs.height / rhs.height)
-}
-
-extension CGSize 
-{
-	var toPoint: CGPoint { .init(x: width, y: height) }
-	var half: CGSize { .init(width: width/2, height: height/2) }
-}
-
-
-extension CGSize
-{
-	public var asCgPoint : CGPoint	{	CGPoint(x:self.width,y:self.height)	}
-}
 
 
 public func -(lhs: CGRect?, rhs: CGPoint?) -> CGRect?
@@ -428,11 +383,3 @@ public extension CGRect
 }
 
 
-
-public extension CGSize
-{
-	var simd_float2 : simd_float2
-	{
-		return simd.simd_float2(Float(self.width),Float(self.height))
-	}
-}

@@ -12,6 +12,22 @@ import CoreGraphics
 import simd
 
 
+
+public func Clamp<TYPE:Comparable>(_ value:TYPE,min:TYPE,max:TYPE) -> TYPE
+{
+	if value <= min
+	{
+		return min
+	}
+	else if value >= max 
+	{
+		return max
+	}
+	return value
+}
+
+
+
 //	get normalised value within these bounds
 public func range(_ min:CGFloat,_ max:CGFloat,value:CGFloat) -> CGFloat
 {

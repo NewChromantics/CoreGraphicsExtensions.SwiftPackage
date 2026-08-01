@@ -162,6 +162,7 @@ public extension simd_float4x4
 						   vector_float4(0, 0, 0, 1)))
 	}
 	
+	@available(macOS 10.15, *)
 	init(rotation: Angle, aroundAxis: SIMD3<Float>)
 	{
 		let radians = rotation.radians
@@ -177,6 +178,7 @@ public extension simd_float4x4
 	}
 	
 	
+	@available(macOS 10.15, *)
 	init(translation:simd_float3,pitch:Angle = .degrees(0),yaw:Angle,scale:simd_float3 = .one)
 	{
 		let scaleMatrix = simd_float4x4(scale:scale)
