@@ -147,8 +147,8 @@ public extension CGRect
 	//	turn 0...1 inside this rect to parent space
 	func expandNormalised(_ boundsPos:CGPoint) -> CGPoint
 	{
-		let x = lerp(self.minX,self.maxX, boundsPos.x)
-		let y = lerp(self.minY,self.maxY, boundsPos.y)
+		let x = lerp(min: self.minX,max: self.maxX, boundsPos.x)
+		let y = lerp(min: self.minY,max: self.maxY, boundsPos.y)
 		return CGPoint(x:x,y:y)
 	}
 	

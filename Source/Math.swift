@@ -54,7 +54,7 @@ public func Range(min:Int,max:Int,value:Int) -> CGFloat
 
 public func range01(_ min:Float,_ max:Float,value:Float) -> Float
 {
-	return clamp( range(min,max,value:value), min:0, max: 1 )
+	return Clamp( range(min,max,value:value), min:0, max: 1 )
 }
 
 //	get normalised value within these bounds
@@ -68,12 +68,13 @@ public func range(_ min:simd_float2,_ max:simd_float2,value:simd_float2) -> simd
 
 
 //	params matching simd, not metal. But with named arguments it doesnt matter so much 
+@available(*, deprecated, renamed: "Clamp", message: "Use generic/PascalCase version")
 public func clamp(_ x:Float,min:Float,max:Float) -> Float
 {
 	return Swift.max( min, Swift.min( x, max ) )
 }
 
-
+@available(*, deprecated, renamed: "Clamp", message: "Use generic version")
 public func clamp(_ value:Int,min:Int,max:Int) -> Int
 {
 	if value < min
@@ -90,7 +91,7 @@ public func clamp(_ value:Int,min:Int,max:Int) -> Int
 
 
 
-public func lerp(_ min:CGFloat,_ max:CGFloat,_ time:CGFloat) -> CGFloat
+public func lerp(min:CGFloat,max:CGFloat,_ time:CGFloat) -> CGFloat
 {
 	return min + ( (max-min)*time )
 }
@@ -105,14 +106,12 @@ public func lerp(min:simd_float3,max:simd_float3,_ time:Float) -> simd_float3
 	return min + ( (max-min)*time )
 }
 
-
-//	match CGFloat lerp
-public func lerp(_ min:Double,_ max:Double,_ time:Double) -> Double
+public func lerp(min:Double,max:Double,_ time:Double) -> Double
 {
 	return min + ( (max-min) * time )
 }
 
-public func lerp(_ min:Float,_ max:Float,_ time:Float) -> Float
+public func lerp(min:Float,max:Float,_ time:Float) -> Float
 {
 	return min + ( (max-min) * time )
 }
