@@ -100,8 +100,10 @@ public extension CGRect
 		self.init( origin: CGPoint(x: x, y: y), size: CGSize(width: width, height: height))
 	}
 	
-	init(accumulate rects:[CGRect])
+	init(accumulate rects:[CGRect?])
 	{
+		let rects = rects.compactMap{$0}
+		
 		if rects.count == 0
 		{
 			self.init()
@@ -379,6 +381,49 @@ public extension CGRect
 			return false
 		}
 		return true
+	}
+	
+	
+	//	move the top 
+	mutating func SetHeightFixedBottom(newHeight:CGFloat)
+	{
+		self.origin.y = self.bottom - newHeight
+		self.size.height = newHeight
+	}
+	
+	
+	
+	//	keep right in place and move left
+	func WithLeft(_ left:CGFloat) -> CGRect
+	{
+		let width = self.right - left
+		return CGRect(x:left, y:self.minY, width:width, height:self.height)
+	}
+	
+	//	keep left in place and move right side
+	func WithRight(_ right:CGFloat) -> CGRect
+	{
+		let width = right - left
+		return CGRect(x:left, y:self.minY, width:width, height:self.height)
+	}
+	
+	
+	func WithExpandedWidthToMatchHeight() -> CGRect
+	{
+		let expandX = height - width
+		let newx = origin.x - (expandX/2.0)
+		let newWidth = width + expandX
+		return CGRect(x:newx, y:origin.y, width: newWidth, height: height)
+	}
+	
+	
+	func Crop(to bounds:CGRect) -> CGRect
+	{
+		let minx = max( self.minX, bounds.minX )
+		let maxx = min( self.maxX, bounds.maxX )
+		let miny = max( self.minY, bounds.minY )
+		let maxy = min( self.maxY, bounds.maxY )
+		return CGRect(x: minx, y: miny, width: maxx-minx, height: maxy-miny)
 	}
 }
 
