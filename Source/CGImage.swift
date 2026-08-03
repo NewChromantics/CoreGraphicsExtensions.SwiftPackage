@@ -313,7 +313,7 @@ extension CGImage
 
 		//let bitmapInfo = CGImageAlphaInfo.premultipliedLast.rawValue
 		let bitmapInfo = self.bitmapInfo
-		guard var context = CGContext.init(data: nil, width: targetWidth, height: targetHeight, bitsPerComponent: 8*bytesPerComponent, bytesPerRow: bytesPerRow, space: colour, bitmapInfo: bitmapInfo) else
+		guard let context = CGContext.init(data: nil, width: targetWidth, height: targetHeight, bitsPerComponent: 8*bytesPerComponent, bytesPerRow: bytesPerRow, space: colour, bitmapInfo: bitmapInfo) else
 		{
 			throw CGImageError("Failed to create CGContext \(targetWidth)x\(targetHeight) for cgimage resize")
 		}
@@ -468,14 +468,14 @@ public extension CGImage
 	func GetImageMeta() throws -> ImageMeta
 	{
 		let imageCg = self
-		let pixelFormatName = imageCg.pixelFormatName
+		//let pixelFormatName = imageCg.pixelFormatName
 		//let pixelFormatInfo = imageCg.pixelFormatInfo
 		let bitsPerPixel = imageCg.bitsPerPixel
 		let bitsPerComponent = imageCg.bitsPerComponent
 		//let bytesPerPixel = bitsPerPixel / bitsPerComponent
 		let bytesPerPixel = bitsPerPixel / 8
 		let channels = bitsPerPixel / bitsPerComponent
-		let bytesPerComponent = bitsPerPixel / bitsPerComponent
+		//let bytesPerComponent = bitsPerPixel / bitsPerComponent
 		let rowWidth = imageCg.bytesPerRow / bytesPerPixel	//	some images are padded!
 		let pixelFormat = try GetPixelFormat()
 		

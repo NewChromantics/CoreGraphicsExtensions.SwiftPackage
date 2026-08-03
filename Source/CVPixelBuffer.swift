@@ -374,7 +374,7 @@ extension CVPixelBuffer
 		let PixelRawBuffer = PixelRawPointer.bindMemory(to: PixelType.self, capacity: PixelDataSize)
 		let PixelBufferPointer = UnsafeBufferPointer(start: PixelRawBuffer, count: PixelDataSize)
 	
-		var result = try PixelBufferPointer.withUnsafeBufferPointer
+		let result = try PixelBufferPointer.withUnsafeBufferPointer
 		{
 			pixelsPtr in
 			do
