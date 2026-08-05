@@ -22,17 +22,25 @@ public extension CGRect
 {
 	//	these are no longer corrected and assume view.isFlipped
 	//	where origin == topleft
-	var top : CGFloat			{	self.minY	}
-	var bottom : CGFloat		{	self.maxY	}
+	var top : CGFloat			
+	{
+		get { self.origin.y }
+		set { origin.y = newValue	}
+	}
+	var bottom : CGFloat		
+	{
+		get	{	origin.y + size.height	}
+		set	{	size.height = newValue - origin.y	}
+	}
 	var left : CGFloat			
 	{
-		get { self.minX }
+		get { self.origin.x }
 		set { origin.x = newValue	}
 	}
 	var right : CGFloat
 	{
-		get	{	self.maxX	}
-		set	{	size.width = newValue - minX	}
+		get	{	origin.x + size.width	}
+		set	{	size.width = newValue - origin.x	}
 	}
 	var middleLeft : CGPoint	{	CGPoint( x: left, y:midY )	}
 	var middleRight : CGPoint	{	CGPoint( x: right, y:midY )	}
