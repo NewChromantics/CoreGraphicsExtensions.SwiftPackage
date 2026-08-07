@@ -127,12 +127,19 @@ public extension CGRect
 		}
 	}
 	
-	init(accumulate points:[CGPoint])
+	init(accumulate points:[CGPoint?])
 	{
-		var minx = points.first?.x ?? CGFloat.infinity
-		var maxx = points.first?.x ?? CGFloat.infinity
-		var miny = points.first?.y ?? CGFloat.infinity
-		var maxy = points.first?.y ?? CGFloat.infinity
+		let points = points.compactMap{$0}
+		guard let first = points.first else
+		{
+			self.init()
+			return
+		}
+		
+		var minx = first.x
+		var maxx = first.x
+		var miny = first.y
+		var maxy = first.y
 		
 		for point in points
 		{
