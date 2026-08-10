@@ -96,6 +96,8 @@ public extension CGRect
 //	nice inits
 public extension CGRect
 {
+	static var infinity : CGRect	{	CGRect(x:CGFloat.infinity,y:.infinity,width:.infinity,height:.infinity)	}
+	
 	init(_ x:CGFloat,_ y:CGFloat,width:CGFloat,height:CGFloat)
 	{
 		self.init( origin: CGPoint(x: x, y: y), size: CGSize(width: width, height: height))
