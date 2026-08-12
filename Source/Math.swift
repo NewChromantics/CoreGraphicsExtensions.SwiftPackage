@@ -29,14 +29,21 @@ public func Clamp<TYPE:Comparable>(_ value:TYPE,min:TYPE,max:TYPE) -> TYPE
 
 
 //	get normalised value within these bounds
-public func range(_ min:CGFloat,_ max:CGFloat,value:CGFloat) -> CGFloat
+public func range<FloatType:BinaryFloatingPoint>(_ start:FloatType,_ end:FloatType,value:FloatType) -> FloatType
 {
-	return (value-min) / (max-min)
+	return (value-start) / (end-start)
 }
 
-public func range(_ min:Float,_ max:Float,value:Float) -> Float
+public func range<MixType:BinaryInteger,FloatType:BinaryFloatingPoint>(_ start:MixType,_ end:MixType,value:FloatType) -> FloatType
 {
-	return (value-min) / (max-min)
+	let start = FloatType(start)
+	let end = FloatType(end)
+	return range(start,end,value:value)
+}
+
+public func range01<FloatType:BinaryFloatingPoint>(_ min:FloatType,_ max:FloatType,value:FloatType) -> FloatType
+{
+	return Clamp( range(min,max,value:value), min:0, max: 1 )
 }
 
 @available(*, deprecated, renamed: "range", message: "Use lowercase function name")
@@ -52,10 +59,6 @@ public func Range(min:Int,max:Int,value:Int) -> CGFloat
 }
 
 
-public func range01(_ min:Float,_ max:Float,value:Float) -> Float
-{
-	return Clamp( range(min,max,value:value), min:0, max: 1 )
-}
 
 //	get normalised value within these bounds
 public func range(_ min:simd_float2,_ max:simd_float2,value:simd_float2) -> simd_float2
