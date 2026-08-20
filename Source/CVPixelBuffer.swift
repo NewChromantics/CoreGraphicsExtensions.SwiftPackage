@@ -201,7 +201,7 @@ public extension CVPixelBuffer
 	
 	var yuvColourMatrixKey : String?
 	{
-		if #available(macOS 12.0, *) 
+		if #available(macOS 12.0,iOS 15.0, *) 
 		{
 			let attachmentsDict = CVBufferCopyAttachments(self,.shouldPropagate)
 			let attachments = attachmentsDict as? [String:Any]	//	matrix values at least are keys. This may want to be Any
@@ -285,7 +285,7 @@ public extension CVPixelBuffer
 		
 		let attachments = 
 		{
-			if #available(macOS 12.0, *) 
+			if #available(macOS 12.0, iOS 15.0, *) 
 			{
 				return CVBufferCopyAttachments(self, .shouldPropagate)
 			} 
