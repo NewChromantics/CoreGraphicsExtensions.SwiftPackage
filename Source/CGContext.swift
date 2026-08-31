@@ -3,15 +3,26 @@ import CoreGraphics
 
 public extension CGContext
 {
-	func DrawInClippedShape(clipPath:CGPath,draw:()->Void)
+	//	rethrows means draw doesnt have to throw so covers throwing and non throwing
+	func DrawInClippedRect(_ clipRect:CGRect,draw:()throws ->Void) rethrows
 	{
-		DrawInClippedShape(clipPath: [clipPath],draw:draw)
+		let path = CGPath(rect: clipRect, transform: nil)
+		try self.DrawInClippedShape(clipPath:[path], draw: draw)
 	}
 	
-	func DrawInClippedShape(clipPath:[CGPath],draw:()->Void)
+	func DrawInClippedShape(clipPath:CGPath,draw:()throws->Void) rethrows
+	{
+		try DrawInClippedShape(clipPath: [clipPath],draw:draw)
+	}
+	
+	func DrawInClippedShape(clipPath:[CGPath],draw:()throws->Void) rethrows
 	{
 		//	save graphics state before clipping added
 		self.saveGState()
+		defer // called even if this function throws
+		{
+			self.restoreGState()
+		}
 		
 		//	add clipping shapes and bake as the clipping mask
 		clipPath.forEach
@@ -21,10 +32,7 @@ public extension CGContext
 		self.clip()
 		
 		//	draw user's stuff whilst clipped
-		draw()
-		
-		//	restore non-clipped state
-		self.restoreGState()
+		try draw()
 	}
 	
 	func DrawFlipped(_ image: CGImage, in rect: CGRect) 
