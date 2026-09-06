@@ -113,16 +113,16 @@ extension CGImage
 		let bytesPerPixel = 1
 		let bytesPerRow = bytesPerPixel * width
 		let bitsPerComponent = 8
-		
-		
 		let colorSpace = CGColorSpaceCreateDeviceGray()
-		//let colorSpace : CGColorSpace? = nil
-		let alpha = CGImageAlphaInfo.alphaOnly.rawValue
+		
+		//	Request alphaOnly format, though CoreGraphics may internally convert to grayscale (.none)
+		//	The pixel data remains identical (single 8-bit channel), only the metadata may differ
+		let bitmapInfo = CGImageAlphaInfo.alphaOnly.rawValue
 		
 		let cgimage = try alphaBuffer.withUnsafeMutableBytes
 		{
 			rgbaBufferPointer in
-			guard let context = CGContext(data: rgbaBufferPointer.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: alpha) else
+			guard let context = CGContext(data: rgbaBufferPointer.baseAddress!, width: width, height: height, bitsPerComponent: bitsPerComponent, bytesPerRow: bytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo) else
 			{
 				throw CGImageError("Failed to create cg context")
 			}
@@ -134,6 +134,12 @@ extension CGImage
 			return cgImage
 		}
 		
+		//	Verify CoreGraphics produced a single-channel format (either alphaOnly or grayscale)
+		let meta = try cgimage.GetImageMeta()
+		if meta.alphaInfo != .alphaOnly && meta.alphaInfo != .none
+		{
+			throw CGImageError("Alpha/Gray image has unexpected format: \(meta.alphaInfo)")
+		}
 		return cgimage
 	}
 }
@@ -451,6 +457,7 @@ public extension CGImage
 		public var bytesPerPixel : Int
 		public var channels : Int			//	should get/match from pixel format
 		public var pixelFormat : OSType
+		public var alphaInfo : CGImageAlphaInfo
 		public var bytesPerComponent : Int	{	bytesPerPixel / channels	}
 		public var bytesPerRow : Int		{	bytesPerPixel * paddedWidth	}
 		public var byteSize : Int			{	bytesPerPixel * paddedWidth * paddedHeight	}
@@ -462,6 +469,43 @@ public extension CGImage
 			let pixel0Byte = pixel * bytesPerPixel
 			let channelByteOffset = bytesPerComponent * channel
 			return pixel0Byte + channelByteOffset
+		}
+		
+		public func GetAlphaChannel() throws -> Int
+		{
+			//	Check if format is alpha-only (single channel alpha)
+			if alphaInfo == .alphaOnly
+			{
+				return 0
+			}
+			
+			//	Single-channel images can be treated as alpha (even if marked as grayscale)
+			//	This matches the behavior of fromAlphaBuffer which may produce .none instead of .alphaOnly
+			if channels == 1
+			{
+				return 0	// The one channel can be interpreted as alpha
+			}
+			
+			//	Check if there's no alpha channel (multi-channel without alpha)
+			if alphaInfo == .none
+			{
+				throw CGImageError("Image has no alpha channel (alphaInfo == .none, \(channels) channels)")
+			}
+			
+			//	Determine alpha position based on alphaInfo
+			//	Alpha-first formats: ARGB
+			if alphaInfo == .premultipliedFirst || alphaInfo == .first || alphaInfo == .noneSkipFirst
+			{
+				return 0	// Alpha is first channel
+			}
+			
+			//	Alpha-last formats: RGBA, BGRA
+			if alphaInfo == .premultipliedLast || alphaInfo == .last || alphaInfo == .noneSkipLast
+			{
+				return channels - 1	// Alpha is last channel
+			}
+			
+			throw CGImageError("Unknown alpha channel position for alphaInfo: \(alphaInfo)")
 		}
 	}
 	
@@ -478,6 +522,7 @@ public extension CGImage
 		//let bytesPerComponent = bitsPerPixel / bitsPerComponent
 		let rowWidth = imageCg.bytesPerRow / bytesPerPixel	//	some images are padded!
 		let pixelFormat = try GetPixelFormat()
+		let alphaInfo = imageCg.alphaInfo
 		
 		let sizeBytes = try imageCg.sizeBytes
 		let paddedHeight = sizeBytes / imageCg.bytesPerRow
@@ -487,7 +532,7 @@ public extension CGImage
 			throw CGImageError("Padded height calculation is wrong (height=\(height) padded=\(paddedHeight)")
 		}
 		
-		return ImageMeta(width: self.width, paddedWidth: rowWidth, height: self.height, paddedHeight: paddedHeight, bytesPerPixel: bytesPerPixel, channels: channels, pixelFormat: pixelFormat)
+		return ImageMeta(width: self.width, paddedWidth: rowWidth, height: self.height, paddedHeight: paddedHeight, bytesPerPixel: bytesPerPixel, channels: channels, pixelFormat: pixelFormat, alphaInfo: alphaInfo)
 	}
 	
 	func withUnsafePixels<Result>(_ callback:(UnsafeBufferPointer<UInt8>,_ imageMeta:ImageMeta)throws->Result) throws -> Result
