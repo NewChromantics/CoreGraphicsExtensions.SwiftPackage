@@ -427,7 +427,8 @@ public extension CGImage
 {
 	var dimensions32 : (UInt32,UInt32)	{	(UInt32(self.width),UInt32(self.height))	}
 	var dimensionsCg : CGSize			{	CGSize(width: self.width, height: self.height)	}
-	
+	var hasAlphaChannel : Bool			{	(try? GetImageMeta().alphaChannel) != nil	}
+
 	/// The true byte size of the image's backing buffer, as reported by the data provider.
 	/// This is the correct size to use when validating against CFDataGetLength(),
 	/// as bytesPerRow may include alignment padding and the buffer may have extra rows.
@@ -458,6 +459,7 @@ public extension CGImage
 		public var channels : Int			//	should get/match from pixel format
 		public var pixelFormat : OSType
 		public var alphaInfo : CGImageAlphaInfo
+		public var alphaChannel : Int?		{	try? GetAlphaChannel()	}
 		public var bytesPerComponent : Int	{	bytesPerPixel / channels	}
 		public var bytesPerRow : Int		{	bytesPerPixel * paddedWidth	}
 		public var byteSize : Int			{	bytesPerPixel * paddedWidth * paddedHeight	}
