@@ -35,12 +35,16 @@ public extension CGContext
 		try draw()
 	}
 	
-	func DrawFlipped(_ image: CGImage, in rect: CGRect) 
+	func DrawFlipped(_ image: CGImage,in rect: CGRect,alpha:CGFloat?=nil) 
 	{
 		DrawAndRestoreState
 		{
 			self.translateBy(x: 0, y: rect.origin.y + rect.height)
 			self.scaleBy(x: 1.0, y: -1.0)
+			if let alpha
+			{
+				self.setAlpha(alpha)
+			}
 			self.draw(image, in: CGRect(origin: CGPoint(x: rect.origin.x, y: 0), size: rect.size))
 		}
 	}
