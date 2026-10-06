@@ -56,5 +56,19 @@ public extension CGContext
 		restoreGState()
 	}
 	
+	func DrawAlphad(alpha:CGFloat,draw:()->Void)
+	{
+		DrawAndRestoreState
+		{
+			//	draw to a layer, and then blend that, instead of setting just
+			//	an alpha, which will apply individual blends
+			setAlpha(alpha)
+			beginTransparencyLayer(auxiliaryInfo: nil)
+			
+			draw()
+			
+			endTransparencyLayer()
+		}
+	}
 }
 
