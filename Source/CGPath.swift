@@ -5,7 +5,7 @@ import CoreGraphics
 public extension CGPath
 {
 	//	.union for multiple paths
-	@available(macOS 13.0, *)
+	@available(macOS 13.0, iOS 16.0, *)
 	func union(_ others: [CGPath], using fillRule: CGPathFillRule = .winding) -> CGPath 
 	{
 		others.reduce(self)
@@ -15,7 +15,7 @@ public extension CGPath
 	}
 	
 	//	merge multiple paths together
-	@available(macOS 13.0, *)
+	@available(macOS 13.0, iOS 16.0, *)
 	static func union(_ paths: [CGPath], using fillRule: CGPathFillRule = .winding) -> CGPath? 
 	{
 		if paths.isEmpty
