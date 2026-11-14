@@ -3,6 +3,47 @@ import UniformTypeIdentifiers
 import VideoToolbox
 import Accelerate
 import simd
+import Foundation
+import ImageIO
+
+
+
+
+// Swift doesn't allow initializers in extensions of Core Foundation types
+// like CGImage, so these are static factory methods instead.
+extension CGImage {
+	
+	public enum LoadError: Error {
+		case invalidImageData
+	}
+	
+	/// Loads an image from a local file URL.
+	/// Returns nil if the file can't be read or isn't a supported image.
+	public static func load(contentsOf fileURL: URL) -> CGImage? {
+		guard let source = CGImageSourceCreateWithURL(fileURL as CFURL, nil) else { return nil }
+		return CGImageSourceCreateImageAtIndex(source, 0, nil)
+	}
+	
+	/// Decodes an image from data in memory.
+	public static func load(data: Data) -> CGImage? {
+		guard let source = CGImageSourceCreateWithData(data as CFData, nil) else { return nil }
+		return CGImageSourceCreateImageAtIndex(source, 0, nil)
+	}
+	
+	/// Downloads and decodes an image from any URL (http/https or file).
+	/// Throws on network errors or if the data isn't a valid image.
+	public static func load(from url: URL, session: URLSession = .shared) async throws -> CGImage {
+		let data: Data
+		if url.isFileURL {
+			data = try Data(contentsOf: url)
+		} else {
+			(data, _) = try await session.data(from: url)
+		}
+		
+		guard let image = load(data: data) else { throw LoadError.invalidImageData }
+		return image
+	}
+}
 
 
 
