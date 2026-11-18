@@ -131,19 +131,47 @@ public extension simd_float4x4
 	static var identity : simd_float4x4
 	{
 		//simd_float4x4( diagonal: SIMD4<Float>(1,1,1,1) )
-		simd_float4x4([ 1,0,0,0,	0,1,0,0,	0,0,1,0,	0,0,0,1])
+		simd_float4x4(rowMajor:[ 1,0,0,0,	0,1,0,0,	0,0,1,0,	0,0,0,1])
 	}
 	
 	//	row major init that allows easier literal initialisation like
 	//	gr: input row major, but using columns:().... something is wrong somewhere
 	//		but the result is correct
+	//	gr: ^^ which project was this, because it contradicts below. Once this is resolved, remove this init
 	init(_ rowMajor4x4:[Float])
 	{
+		precondition(rowMajor4x4.count == 16, "rowMajor array must contain exactly 16 floats, got \(rowMajor4x4.count)")
 		let row0 = SIMD4<Float>( rowMajor4x4[0], rowMajor4x4[1], rowMajor4x4[2], rowMajor4x4[3] )
 		let row1 = SIMD4<Float>( rowMajor4x4[4], rowMajor4x4[5], rowMajor4x4[6], rowMajor4x4[7] )
 		let row2 = SIMD4<Float>( rowMajor4x4[8], rowMajor4x4[9], rowMajor4x4[10], rowMajor4x4[11] )
 		let row3 = SIMD4<Float>( rowMajor4x4[12], rowMajor4x4[13], rowMajor4x4[14], rowMajor4x4[15] )
 		self.init(columns: (row0,row1,row2,row3))
+	}
+
+	
+	init(rowMajor: [Float]) 
+	{
+		precondition(rowMajor.count == 16, "rowMajor array must contain exactly 16 floats, got \(rowMajor.count)")
+		
+		// Row-major: [ m00 m01 m02 m03 | m10 m11 m12 m13 | m20 m21 m22 m23 | m30 m31 m32 m33 ]
+		// Need to transpose to column-major for SIMD
+		let col0 = SIMD4<Float>(rowMajor[0], rowMajor[4], rowMajor[8],  rowMajor[12])
+		let col1 = SIMD4<Float>(rowMajor[1], rowMajor[5], rowMajor[9],  rowMajor[13])
+		let col2 = SIMD4<Float>(rowMajor[2], rowMajor[6], rowMajor[10], rowMajor[14])
+		let col3 = SIMD4<Float>(rowMajor[3], rowMajor[7], rowMajor[11], rowMajor[15])
+		self.init(columns: (col0, col1, col2, col3))
+	}
+	
+	init(colMajor: [Float]) 
+	{
+		precondition(colMajor.count == 16, "colMajor array must contain exactly 16 floats, got \(colMajor.count)")
+		
+		// Column-major: columns are stored sequentially
+		let col0 = SIMD4<Float>(colMajor[0],  colMajor[1],  colMajor[2],  colMajor[3])
+		let col1 = SIMD4<Float>(colMajor[4],  colMajor[5],  colMajor[6],  colMajor[7])
+		let col2 = SIMD4<Float>(colMajor[8],  colMajor[9],  colMajor[10], colMajor[11])
+		let col3 = SIMD4<Float>(colMajor[12], colMajor[13], colMajor[14], colMajor[15])
+		self.init(columns: (col0, col1, col2, col3))
 	}
 	
 	init(translation:SIMD3<Float>)
