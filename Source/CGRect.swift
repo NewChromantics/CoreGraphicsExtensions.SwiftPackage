@@ -231,13 +231,18 @@ public extension CGRect
 		return subRect
 	}
 	
-	func Split(chunksWide:Int,chunksHigh:Int) -> [CGRect]
+	func Split(chunksWide:Int, chunksHigh:Int, columnMargin:CGFloat = 0, rowMargin:CGFloat = 0) -> [CGRect]
 	{
 		let chunksWide = max(1,chunksWide)
 		let chunksHigh = max(1,chunksHigh)
+		
+		//	total space taken up by gaps between columns/rows
+		let totalColumnMargin = columnMargin * CGFloat(chunksWide-1)
+		let totalRowMargin = rowMargin * CGFloat(chunksHigh-1)
+		
 		var chunkRect = self
-		chunkRect.size.width /= CGFloat(chunksWide)
-		chunkRect.size.height /= CGFloat(chunksHigh)
+		chunkRect.size.width = max(0, (self.width - totalColumnMargin) / CGFloat(chunksWide))
+		chunkRect.size.height = max(0, (self.height - totalRowMargin) / CGFloat(chunksHigh))
 		
 		var chunkRects : [CGRect] = []
 		for x in 0..<chunksWide
@@ -245,8 +250,8 @@ public extension CGRect
 			for y in 0..<chunksHigh
 			{
 				var subRect = chunkRect
-				subRect.origin.x += CGFloat(x) * chunkRect.width
-				subRect.origin.y += CGFloat(y) * chunkRect.height
+				subRect.origin.x += CGFloat(x) * (chunkRect.width + columnMargin)
+				subRect.origin.y += CGFloat(y) * (chunkRect.height + rowMargin)
 				chunkRects.append(subRect)
 			}
 		}
